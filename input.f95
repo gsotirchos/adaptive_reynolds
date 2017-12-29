@@ -1,4 +1,4 @@
-subroutine input(node, element)
+subroutine input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
 
     use types
     implicit none
@@ -13,12 +13,12 @@ subroutine input(node, element)
                tot_df, &
                i, j, cnt
 
-    integer, parameter :: node_df = 1, ele_nodes = 3
+    integer :: node_df = 1, ele_nodes = 3
 
-    type(el_node), intent(out) :: node
-    type(tri_element), intent(out) :: element
+    type(fem_node) :: node
+    type(fem_element) :: element
 
-    ! Reynolds Parameters
+    ! Reynolds parameters
     hx = 1.
     hy = 1.2
     p_bound = 0.
@@ -37,23 +37,19 @@ subroutine input(node, element)
     num_elem = 2*xsub*ysub
     tot_df = node_df*num_nodes
 
-    ! Allocate Arrays
+    ! Allocate arrays
     allocate(node%x(num_nodes))
     allocate(node%y(num_nodes))
     allocate(node%stat(num_nodes))
     allocate(node%P(num_nodes))
     allocate(node%H(num_nodes))
 
-    allocate(element%n1(num_elem))
-    allocate(element%n2(num_elem))
-    allocate(element%n3(num_elem))
-    allocate(element%q12(num_elem))
-    allocate(element%q23(num_elem))
-    allocate(element%q31(num_elem))
+    allocate(element%node(num_elem, ele_nodes))
+    allocate(element%q(num_elem, ele_nodes))
     allocate(element%He(num_elem))
     allocate(element%c(num_elem))
 
-    ! Generate Node Positions
+    ! Generate node positions
     cnt = 0
 
     do j = 0, ysub
@@ -65,25 +61,25 @@ subroutine input(node, element)
     end do
 
 
-    ! Generate Elements' Nodes
+    ! Generate elements' nodes
     cnt = -1
 
     do j = 1, ysub
         do i = 1, xsub
         cnt = cnt + 2
-        element%n1(cnt) = (j - 1)*(xsub + 1) + i
-        element%n2(cnt) = element%n1(cnt) + 1
-        element%n3(cnt) = element%n2(cnt) + xsub
+        element%node(cnt, 1) = (j - 1)*(xsub + 1) + i
+        element%node(cnt, 2) = element%node(cnt, 1) + 1
+        element%node(cnt, 3) = element%node(cnt, 2) + xsub
 
-        element%n1(cnt + 1) = element%n2(cnt)
-        element%n2(cnt + 1) = element%n3(cnt) + 1
-        element%n3(cnt + 1) = element%n3(cnt)
+        element%node(cnt + 1, 1) = element%node(cnt, 3) + 1
+        element%node(cnt + 1, 2) = element%node(cnt, 3)
+        element%node(cnt + 1, 3) = element%node(cnt, 2)
         end do
     end do
 
 
-    ! Generate Boundary Values
-    ! Here: at nodes where x = 0 or L or where y = B, p is prescribed.
+    ! Generate boundary values
+    ! Here: at nodes where x = 0 or L or where y = B, p is prescribed
     where(node%y == B .or. node%x == 0 .or. node%x == L)
         node%stat = 0
         node%P = P_bound
@@ -93,69 +89,68 @@ subroutine input(node, element)
     end where
 
 
-    ! Generate Boundary Flow
+    ! Generate boundary flow
     ! Element pairs are defined as follows
-    !   3     3_____2 
+    !   3     2_____1 
     !   |\     \    |
     !   | \     \(2)|
     !   |  \     \  |    y
     !   |(1)\     \ |   |
-    !  1|____\2    \|1  |___x
-    ! horizontal side with y = 0 -> sides "1-2" of of odd numbered elements
-    ! horizontal side with y = B -> sides "2-3" of of even numbered elements
-    !   vertical side with x = 0 -> sides "3-1" of of odd numbered elements
-    !   vertical side with x = L -> sides "1-2" of of even numbered elements
-    ! Here: on elements' sides with y = 0, q is nonzero.
-    ! Because dp/dy = 0 -> q = dp/dx (on y = 0).
+    !  1|____\2    \|3  |___x
+    ! horizontal border with y = C -> sides "1-2"
+    !   vertical border with x = C -> sides "3-1"
+    ! Here: on elements' sides with y = 0, q is nonzero
+    ! Because dp/dy = 0 -> q = dp/dx (on y = 0)
 
-    where(node%y(element%n1) == 0 .and. node%y(element%n2) == 0)
-        element%q12 = q
-        element%q23 = 0
-        element%q31 = 0
+    where(node%y(element%node(:, 1)) == 0 .and. &
+          node%y(element%node(:, 2)) == 0)
+        element%q(:, 1) = q
+        element%q(:, 2) = 0
+        element%q(:, 3) = 0
     elsewhere
-        element%q12 = 0
-        element%q23 = 0
-        element%q31 = 0
+        element%q(:, 1) = 0
+        element%q(:, 2) = 0
+        element%q(:, 3) = 0
     end where
 
 
-    ! Generate Nodal H
+    ! Generate nodal H
     ! H is described by an equation of the form:
     !     H = Ha*x + Hb
     ! where Ha = dH/dx = const.
     node%H = Ha*node%x + Hb
 
 
-    ! Generate Elements' He
-    element%He = (node%H(element%n1) + &
-                  node%H(element%n2) + &
-                  node%H(element%n3))/3
+    ! Generate elements' He
+    element%He = (node%H(element%node(:, 1)) + &
+                  node%H(element%node(:, 2)) + &
+                  node%H(element%node(:, 3)))/3
 
 
-    ! Generate Elements' c
+    ! Generate elements' c
     element%c = 6*Ha/(element%He**3)
 
     ! DEBUG
     ! print nodes
-    print *, "** DEBUG **"
-    print *, "NODES"
-    print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
-    do i = 0, (num_nodes + 1)
-        print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
-            node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
-    end do
-    print *, " "
+    !print *, "** DEBUG **"
+    !print *, "NODES"
+    !print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
+    !do i = 0, (num_nodes + 1)
+    !    print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
+    !        node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
+    !end do
+    !print *, " "
 
     ! print elements
-    print *, "ELEMENTS"
-    print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
-                            "q12", "q23", "q31", &
-                            "He", "c"
-    do i = 0, (num_elem + 1)
-        print "(I4, A1, 3I4, 5F6.3)", i, ": ", &
-            element%n1(i), element%n2(i), element%n3(i), &
-            element%q12(i), element%q23(i), element%q31(i), &
-            element%He(i), element%c(i)
-    end do
+    !print *, "ELEMENTS"
+    !print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
+    !                        "q12", "q23", "q31", &
+    !                        "He", "c"
+    !do i = 0, (num_elem + 1)
+    !    print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
+    !        element%node(i, 1), element%node(i, 2), element%node(i, 3), &
+    !        element%q(i, 1), element%q(i, 2), element%q(i, 3), &
+    !        element%He(i), element%c(i)
+    !end do
 
 end subroutine input
