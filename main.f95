@@ -6,14 +6,17 @@ program reynolds_main
     type(fem_node) :: node
     type(fem_element) :: element
 
-    real :: hx, hy, Ha, Hb
-
     integer :: num_nodes, num_elem
+
+    real :: hx, hy, Ha, Hb
+    real, allocatable :: P(:)
 
     ! input data
     call input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
 
+    allocate(P(num_nodes))
+
     ! calculation
-    call calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
+    call calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
 
 end program reynolds_main

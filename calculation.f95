@@ -1,6 +1,7 @@
-subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
+subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
 
     use types
+    use invert
     implicit none
 
     real, intent(in) :: hx, hy, Ha, Hb
@@ -16,7 +17,9 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
             l31(num_elem), &
             A(num_elem), C(num_elem, 2:3, 3), &
             K(num_nodes,num_nodes), &
-            f(num_nodes), fc
+            invK(num_nodes,num_nodes), &
+            f(num_nodes), fc, &
+            P(num_nodes)
 
 
     ! Generate sides lengths matrices
@@ -73,15 +76,27 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
                               l31(n)*element%q(n, 3))/2
     end do
 
+    ! Generate P matrix
+    invK = inv(K)
+    P = matmul(invK, f)
 
     ! DEBUG
     !print *, "** DEBUG **"
+    !print *,
     !print *, "STIFFNESS MATRIX"
     !do i = 1, num_nodes
     !    print "(16F4.1)", K(i, :)
     !end do
-    
+    !print *,
+    !print *, "INVERTED STIFFNESS MATRIX"
+    !do i = 1, num_nodes
+    !    print "(16F4.1)", invK(i, :)
+    !end do
+    !print *,
     !print *, "f MATRIX"
     !print "(F4.1)", f
+    !print *,
+    !print *, "P MATRIX"
+    !print "(F4.1)", P
 
 end subroutine calculation
