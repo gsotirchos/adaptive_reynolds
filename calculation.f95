@@ -9,13 +9,14 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
     type(fem_element), intent(in) :: element
     
     integer :: num_nodes, num_elem, &
-               n, i, j, ni, nj
+               n, i, j, ni, nj, n1, n2, n3 ! intermediate cntrs/vars
 
     real :: l12(num_elem), &
             l23(num_elem), &
             l31(num_elem), &
             A(num_elem), C(num_elem, 2:3, 3), &
-            K(num_nodes,num_nodes)
+            K(num_nodes,num_nodes), &
+            f(num_nodes), fc
 
 
     ! Generate sides lengths matrices
@@ -58,10 +59,29 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
         end do
     end do
 
+    ! Generate f matrix
+    do n = 1, num_elem
+        n1 = element%node(n, 1)
+        n2 = element%node(n, 2)
+        n3 = element%node(n, 3)
+        fc = element%c(n)*A(n)/3
+        f(n1) = f(n1) - fc + (l12(n)*element%q(n, 1) + &
+                              l31(n)*element%q(n, 3))/2
+        f(n2) = f(n2) - fc + (l12(n)*element%q(n, 1) + &
+                              l23(n)*element%q(n, 2))/2
+        f(n3) = f(n3) - fc + (l23(n)*element%q(n, 2) + &
+                              l31(n)*element%q(n, 3))/2
+    end do
+
 
     ! DEBUG
+    !print *, "** DEBUG **"
+    !print *, "STIFFNESS MATRIX"
     !do i = 1, num_nodes
     !    print "(16F4.1)", K(i, :)
     !end do
+    
+    !print *, "f MATRIX"
+    !print "(F4.1)", f
 
 end subroutine calculation

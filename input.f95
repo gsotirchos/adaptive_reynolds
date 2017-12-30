@@ -131,7 +131,6 @@ subroutine input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
     element%c = 6*Ha/(element%He**3)
 
     ! DEBUG
-    ! print nodes
     !print *, "** DEBUG **"
     !print *, "NODES"
     !print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
@@ -141,7 +140,6 @@ subroutine input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
     !end do
     !print *, " "
 
-    ! print elements
     !print *, "ELEMENTS"
     !print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
     !                        "q12", "q23", "q31", &
