@@ -12,11 +12,14 @@ subroutine calculation(node, element, P)
             l23(num_elem), &
             l31(num_elem), &
             A(num_elem), C(num_elem, 2:3, 3), &
+            K_full(num_nodes,num_nodes), &
+            f_full(num_nodes), fc, &
             K(num_nodes,num_nodes), &
+            f(num_nodes), &
             invK(num_nodes,num_nodes), &
-            f(num_nodes), fc, &
-            P(num_nodes)
-
+            P(num_nodes), &
+    ! array to map "reduced" matrices' rows to originals'
+    integer :: isfixed(count(node%stat == 0)) 
 
     ! Generate triangles' sides' lengths matrices
     l12 = sqrt((node%x(element%node(:,2))-node%x(element%node(:,1)))**2 + &
@@ -44,33 +47,63 @@ subroutine calculation(node, element, P)
         C(n, :, :) = C(n, :, :)/(2*A(n))
     end do
 
-    K = 0
 
-    ! Generate stiffness matrix
+    K = 0
+    K_full = 0
+
+    ! Generate full stiffness matrix
     do n = 1, num_elem
         do j = 1, 3
             do i = 1, 3
                 ni = element%node(n, i)
                 nj = element%node(n, j)
-                K(ni, nj) = K(ni, nj) + A(n)*(hx*C(n, 2, i)*C(n, 2, j) + &
-                                              hy*C(n, 3, i)*C(n, 3, j))
+                K_full(ni, nj) = K_full(ni, nj) + &
+                                 A(n)*(hx*C(n, 2, i)*C(n, 2, j) + &
+                                       hy*C(n, 3, i)*C(n, 3, j))
             end do
         end do
     end do
 
-    ! Generate f matrix
+
+    f = 0
+    f_full = 0
+    fc = 0
+
+    ! Generate full f matrix
     do n = 1, num_elem
         n1 = element%node(n, 1)
         n2 = element%node(n, 2)
         n3 = element%node(n, 3)
         fc = element%c(n)*A(n)/3
-        f(n1) = f(n1) - fc + (l12(n)*element%q(n, 1) + &
-                              l31(n)*element%q(n, 3))/2
-        f(n2) = f(n2) - fc + (l12(n)*element%q(n, 1) + &
-                              l23(n)*element%q(n, 2))/2
-        f(n3) = f(n3) - fc + (l23(n)*element%q(n, 2) + &
-                              l31(n)*element%q(n, 3))/2
+        f_full(n1) = f_full(n1) - fc + (l12(n)*element%q(n, 1) + &
+                                        l31(n)*element%q(n, 3))/2
+        f_full(n2) = f_full(n2) - fc + (l12(n)*element%q(n, 1) + &
+                                        l23(n)*element%q(n, 2))/2
+        f_full(n3) = f_full(n3) - fc + (l23(n)*element%q(n, 2) + &
+                                        l31(n)*element%q(n, 3))/2
     end do
+
+
+    ! Generate map matrix
+    n = 0
+    do i = 1, size(node%stat)
+        if (node%stat(i) == 0) then
+            n = n + 1
+            isfixed(n) = i
+        end if
+    end do
+
+    !Re
+    do i = 1, size(isfixed)
+        do j = 1, size(isfixed)
+            K(i, j) = K_full(isfixed(i), isfixed(j))
+        end do
+
+        do j = 1, 
+        f(i) = 
+    end do
+
+
 
     ! Generate P matrix
     invK = inv(K)
@@ -81,7 +114,7 @@ subroutine calculation(node, element, P)
     print *,
     print *, "STIFFNESS MATRIX"
     do i = 1, num_nodes
-        print "(16F4.1)", K(i, :)
+        print "(16F4.1)", K_full(i, :)
     end do
     print *,
     print *, "INVERTED STIFFNESS MATRIX"
@@ -90,9 +123,12 @@ subroutine calculation(node, element, P)
     end do
     print *,
     print *, "f MATRIX"
-    print "(F4.1)", f
+    print "(F4.1)", f_full
     print *,
     print *, "P MATRIX"
     print "(F4.1)", P
+
+    print *, map
+    print *, node%stat
 
 end subroutine calculation
