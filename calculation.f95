@@ -1,17 +1,13 @@
-subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
+subroutine calculation(node, element, P)
 
     use types
+    use parameters
     use invert
     implicit none
-
-    real, intent(in) :: hx, hy, Ha, Hb
 
     type(fem_node), intent(in) :: node
     type(fem_element), intent(in) :: element
     
-    integer :: num_nodes, num_elem, &
-               n, i, j, ni, nj, n1, n2, n3 ! intermediate cntrs/vars
-
     real :: l12(num_elem), &
             l23(num_elem), &
             l31(num_elem), &
@@ -22,7 +18,7 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
             P(num_nodes)
 
 
-    ! Generate sides lengths matrices
+    ! Generate triangles' sides' lengths matrices
     l12 = sqrt((node%x(element%node(:,2))-node%x(element%node(:,1)))**2 + &
                (node%y(element%node(:,2))-node%y(element%node(:,1)))**2)
     l23 = sqrt((node%x(element%node(:,3))-node%x(element%node(:,2)))**2 + &
@@ -39,8 +35,8 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
     C(:, 3, 3) = node%y(element%node(:, 2)) - node%y(element%node(:, 1))
 
     ! Calculate element area
-    ! If the triangles are orthogonal then C is non-singular
-    ! and the area is calculated by (width)x(height)/2
+    ! If the triangles are orthogonal then C is singular
+    ! and the area is calculated by width*height/2
     A = (C(:, 2, 1)*C(:, 3, 2) - C(:, 2, 2)*C(:, 3, 1))/2
 
     do n = 1, num_elem
@@ -81,22 +77,22 @@ subroutine calculation(num_nodes, num_elem, node, element, hx, hy, Ha, Hb, P)
     P = matmul(invK, f)
 
     ! DEBUG
-    !print *, "** DEBUG **"
-    !print *,
-    !print *, "STIFFNESS MATRIX"
-    !do i = 1, num_nodes
-    !    print "(16F4.1)", K(i, :)
-    !end do
-    !print *,
-    !print *, "INVERTED STIFFNESS MATRIX"
-    !do i = 1, num_nodes
-    !    print "(16F4.1)", invK(i, :)
-    !end do
-    !print *,
-    !print *, "f MATRIX"
-    !print "(F4.1)", f
-    !print *,
-    !print *, "P MATRIX"
-    !print "(F4.1)", P
+    print *, "** DEBUG **"
+    print *,
+    print *, "STIFFNESS MATRIX"
+    do i = 1, num_nodes
+        print "(16F4.1)", K(i, :)
+    end do
+    print *,
+    print *, "INVERTED STIFFNESS MATRIX"
+    do i = 1, num_nodes
+        print "(16F4.1)", invK(i, :)
+    end do
+    print *,
+    print *, "f MATRIX"
+    print "(F4.1)", f
+    print *,
+    print *, "P MATRIX"
+    print "(F4.1)", P
 
 end subroutine calculation

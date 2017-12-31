@@ -1,41 +1,11 @@
-subroutine input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
+subroutine input(node, element)
 
     use types
+    use parameters
     implicit none
 
-    real :: hx, hy, P_bound, q, &
-            Ha, Hb, &
-            L, B, &
-            dL, dB
-
-    integer :: xsub, ysub, &
-               num_nodes, num_elem, &
-               tot_df, &
-               i, j, cnt
-
-    integer :: node_df = 1, ele_nodes = 3
-
-    type(fem_node) :: node
-    type(fem_element) :: element
-
-    ! Reynolds parameters
-    hx = 1.
-    hy = 1.2
-    p_bound = 0.
-    q = 5.
-    Ha = 0.5
-    Hb = 4.
-
-    ! Dimensions
-    L = 3.
-    B = 3.
-    xsub = 3
-    ysub = 3
-    dL = L/xsub
-    dB = B/ysub
-    num_nodes = (xsub + 1)*(ysub + 1)
-    num_elem = 2*xsub*ysub
-    tot_df = node_df*num_nodes
+    type(fem_node), intent(out) :: node
+    type(fem_element), intent(out) :: element
 
     ! Allocate arrays
     allocate(node%x(num_nodes))
@@ -44,36 +14,36 @@ subroutine input(num_nodes, num_elem, node, element, hx, hy, Ha, Hb)
     allocate(node%P(num_nodes))
     allocate(node%H(num_nodes))
 
-    allocate(element%node(num_elem, ele_nodes))
-    allocate(element%q(num_elem, ele_nodes))
+    allocate(element%node(num_elem, elem_nodes))
+    allocate(element%q(num_elem, elem_nodes))
     allocate(element%He(num_elem))
     allocate(element%c(num_elem))
 
     ! Generate node positions
-    cnt = 0
+    n = 0
 
     do j = 0, ysub
         do i = 0, xsub
-            cnt = cnt + 1
-            node%x(cnt) = i*dL
-            node%y(cnt) = j*dB
+            n = n + 1
+            node%x(n) = i*dL
+            node%y(n) = j*dB
         end do
     end do
 
 
     ! Generate elements' nodes
-    cnt = -1
+    n = -1
 
     do j = 1, ysub
         do i = 1, xsub
-        cnt = cnt + 2
-        element%node(cnt, 1) = (j - 1)*(xsub + 1) + i
-        element%node(cnt, 2) = element%node(cnt, 1) + 1
-        element%node(cnt, 3) = element%node(cnt, 2) + xsub
+        n = n + 2
+        element%node(n, 1) = (j - 1)*(xsub + 1) + i
+        element%node(n, 2) = element%node(n, 1) + 1
+        element%node(n, 3) = element%node(n, 2) + xsub
 
-        element%node(cnt + 1, 1) = element%node(cnt, 3) + 1
-        element%node(cnt + 1, 2) = element%node(cnt, 3)
-        element%node(cnt + 1, 3) = element%node(cnt, 2)
+        element%node(n + 1, 1) = element%node(n, 3) + 1
+        element%node(n + 1, 2) = element%node(n, 3)
+        element%node(n + 1, 3) = element%node(n, 2)
         end do
     end do
 
