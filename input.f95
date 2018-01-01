@@ -21,7 +21,6 @@ subroutine input(node, element)
 
     ! Generate node positions
     n = 0
-
     do j = 0, ysub
         do i = 0, xsub
             n = n + 1
@@ -33,7 +32,6 @@ subroutine input(node, element)
 
     ! Generate elements' nodes
     n = -1
-
     do j = 1, ysub
         do i = 1, xsub
         n = n + 2
@@ -70,7 +68,7 @@ subroutine input(node, element)
     ! horizontal border with y = C -> sides "1-2"
     !   vertical border with x = C -> sides "3-1"
     ! Here: on elements' sides with y = 0, q is nonzero
-    ! Because dp/dy = 0 -> q = dp/dx (on y = 0)
+    ! Because dp/dy = 0 -> q = dp/dx
 
     where(node%y(element%node(:, 1)) == 0 .and. &
           node%y(element%node(:, 2)) == 0)
