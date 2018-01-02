@@ -23,10 +23,13 @@ subroutine calculation(node, element, P)
 
 
     ! Generate triangles' sides' lengths matrices
+    l12 = 0
     l12 = sqrt((node%x(element%node(:,2))-node%x(element%node(:,1)))**2 + &
                (node%y(element%node(:,2))-node%y(element%node(:,1)))**2)
+    l23 = 0
     l23 = sqrt((node%x(element%node(:,3))-node%x(element%node(:,2)))**2 + &
                (node%y(element%node(:,3))-node%y(element%node(:,2)))**2)
+    l31 = 0
     l31 = sqrt((node%x(element%node(:,1))-node%x(element%node(:,3)))**2 + &
                (node%y(element%node(:,1))-node%y(element%node(:,3)))**2)
 
@@ -43,10 +46,9 @@ subroutine calculation(node, element, P)
     ! and the area is calculated by width*height/2
     A = (C(:, 2, 1)*C(:, 3, 2) - C(:, 2, 2)*C(:, 3, 1))/2
 
-    do n = 1, num_elem
-        if (A(n) == 0) A(n) = (l12(n)*l31(n))/2
-        C(n, :, :) = C(n, :, :)/(2*A(n))
-    end do
+    where (A == 0)
+        A = (l12*l31)/2
+    end where
 
 
     ! Generate stiffness matrix
@@ -56,9 +58,8 @@ subroutine calculation(node, element, P)
             do i = 1, 3
                 ni = element%node(n, i)
                 nj = element%node(n, j)
-                K(ni, nj) = K(ni, nj) + &
-                                 A(n)*(hx*C(n, 2, i)*C(n, 2, j) + &
-                                       hy*C(n, 3, i)*C(n, 3, j))
+                K(ni, nj) = K(ni, nj) + A(n)*(hx*C(n, 2, i)*C(n, 2, j) + &
+                                              hy*C(n, 3, i)*C(n, 3, j))
             end do
         end do
     end do
@@ -72,12 +73,12 @@ subroutine calculation(node, element, P)
         n2 = element%node(n, 2)
         n3 = element%node(n, 3)
         fc = element%c(n)*A(n)/3
-        f(n1) = f(n1) - fc + (l12(n)*element%q(n, 1) + &
-                              l31(n)*element%q(n, 3))/2
-        f(n2) = f(n2) - fc + (l12(n)*element%q(n, 1) + &
-                              l23(n)*element%q(n, 2))/2
-        f(n3) = f(n3) - fc + (l23(n)*element%q(n, 2) + &
-                              l31(n)*element%q(n, 3))/2
+        f(n1) = f(n1) - fc + (l12(n)*element%q(n, 1))/2 + &
+                             (l31(n)*element%q(n, 3))/2
+        f(n2) = f(n2) - fc + (l12(n)*element%q(n, 1))/2 + &
+                             (l23(n)*element%q(n, 2))/2
+        f(n3) = f(n3) - fc + (l23(n)*element%q(n, 2))/2 + &
+                             (l31(n)*element%q(n, 3))/2
     end do
 
 
@@ -94,6 +95,7 @@ subroutine calculation(node, element, P)
         end if
     end do
 
+
     ! Delete fixed degrees of freedom rows and move the columns
     ! to the right side of the equation
     K_free = 0
@@ -103,8 +105,9 @@ subroutine calculation(node, element, P)
             K_free(i, j) = K(isfree(i), isfree(j))
         end do
 
+        f_free(i) = f(isfree(i))
         do j = 1, size(isfixed)
-            f_free(i) = f(isfree(i)) - K(i, isfixed(j))*node%P(isfixed(j))
+            f_free(i) = f_free(i) - K(i, isfixed(j))*node%P(isfixed(j))
         end do
     end do
 
@@ -116,19 +119,23 @@ subroutine calculation(node, element, P)
         P(isfree(i)) = P_free(i)
     end do
 
+
     ! DEBUG
     !print *, "** DEBUG **"
     !print *,
-    !print *, "STIFFNESS MATRIX"
-    !print "(6F6.2)", K_free
-    !print *,
-    !print *, "INVERTED STIFFNESS MATRIX"
-    !print "(6F6.2)", inv(K_free)
-    !print *,
+    print *, "STIFFNESS MATRIX"
+    print "(9F6.1)", K_free
+    print *,
+    print *, "INVERTED STIFFNESS MATRIX"
+    print "(9F6.1)", inv(K_free)
+    print *,
     !print *, "f MATRIX"
-    !print "(F8.5)", f_free
+    !print "(F8.4)", f
     !print *,
     print *, "P MATRIX"
-    print "(F8.5)", P
+    print "(F8.4)", P
+    print *,
+    print *, "Free:", isfree
+    print *, "Fixed:", isfixed
 
 end subroutine calculation

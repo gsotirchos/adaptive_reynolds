@@ -47,13 +47,27 @@ subroutine input(node, element)
 
 
     ! Generate boundary values
-    ! Here: at nodes where x = 0 or L or where y = B, p is prescribed
-    where(node%y == B .or. node%x == 0 .or. node%x == L)
+    node%stat = 1
+    node%p = 0
+    !! Nodes on y = 0
+    !where(node%y == 0)
+    !    node%stat = 0
+    !    node%P = P_bound
+    !end where
+    ! Nodes on y = B
+    where(node%y == B)
         node%stat = 0
         node%P = P_bound
-    elsewhere
-        node%stat = 1
-        node%p = 0
+    end where
+    ! Nodes on x = 0
+    where(node%x == 0)
+        node%stat = 0
+        node%P = P_bound
+    end where
+    ! Nodes on x = L
+    where(node%x == L)
+        node%stat = 0
+        node%P = P_bound
     end where
 
 
@@ -67,22 +81,41 @@ subroutine input(node, element)
     !  1|____\2    \|3  |___x
     ! horizontal border with y = C -> sides "1-2"
     !   vertical border with x = C -> sides "3-1"
-    ! Here: on elements' sides with y = 0, q is nonzero
-    ! Because dp/dy = 0 -> q = dp/dx
-
+    ! Because dp/dy = 0 -> q = hx*dp/dx
+    element%q(:, 1) = 0
+    element%q(:, 2) = 0
+    element%q(:, 3) = 0
+    ! Sides with y = 0
     where(node%y(element%node(:, 1)) == 0 .and. &
           node%y(element%node(:, 2)) == 0)
         element%q(:, 1) = q
         element%q(:, 2) = 0
         element%q(:, 3) = 0
-    elsewhere
-        element%q(:, 1) = 0
-        element%q(:, 2) = 0
-        element%q(:, 3) = 0
     end where
+    !! Sides with y = B
+    !where(node%y(element%node(:, 1)) == B .and. &
+    !      node%y(element%node(:, 2)) == B)
+    !    element%q(:, 1) = q
+    !    element%q(:, 2) = 0
+    !    element%q(:, 3) = 0
+    !end where
+    !! Sides with x = 0
+    !where(node%x(element%node(:, 3)) == 0 .and. &
+    !      node%x(element%node(:, 1)) == 0)
+    !    element%q(:, 1) = 0
+    !    element%q(:, 2) = 0
+    !    element%q(:, 3) = q
+    !end where
+    !! Sides with x = L
+    !where(node%x(element%node(:, 3)) == L .and. &
+    !      node%x(element%node(:, 1)) == L)
+    !    element%q(:, 1) = 0
+    !    element%q(:, 2) = 0
+    !    element%q(:, 3) = q
+    !end where
 
 
-    ! Generate nodal H
+    ! Generate H on nodes
     ! H is described by an equation of the form:
     !     H = Ha*x + Hb
     ! where Ha = dH/dx = const.
@@ -98,16 +131,17 @@ subroutine input(node, element)
     ! Generate elements' c
     element%c = 6*Ha/(element%He**3)
 
+
     ! DEBUG
     !print *, "** DEBUG **"
+    !print *,
     !print *, "NODES"
     !print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
     !do i = 0, (num_nodes + 1)
     !    print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
     !        node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
     !end do
-    !print *, " "
-
+    !print *,
     !print *, "ELEMENTS"
     !print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
     !                        "q12", "q23", "q31", &

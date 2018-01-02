@@ -14,14 +14,11 @@ contains
 	
 	    real, allocatable :: A(:, :), B(:, :), invA(:, :)
 	
-	    integer, allocatable :: n_n(:)
 	    integer :: n, i, j, k
 
 	
         ! Allocation of matrices
-	    allocate(n_n(size(shape(AA))))
-        n_n = shape(AA)
-	    n = n_n(1)
+        n = size(AA, dim = 1)
 	    allocate(A(n, n))
 	    allocate(B(n, 2*n))
 	    allocate(invA(n, n))
