@@ -132,7 +132,7 @@ subroutine input(node, element)
     element%c = 6*Ha/(element%He**3)
 
 
-    ! DEBUG
+    !! DEBUG
     !print *, "** DEBUG **"
     !print *,
     !print *, "NODES"

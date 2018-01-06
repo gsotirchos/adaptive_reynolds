@@ -37,9 +37,9 @@ subroutine calculation(node, element, P)
     C(:, 2, 1) = node%y(element%node(:, 2)) - node%y(element%node(:, 3))
     C(:, 2, 2) = node%y(element%node(:, 3)) - node%y(element%node(:, 1))
     C(:, 2, 3) = node%y(element%node(:, 1)) - node%y(element%node(:, 2))
-    C(:, 3, 1) = node%y(element%node(:, 3)) - node%y(element%node(:, 2))
-    C(:, 3, 2) = node%y(element%node(:, 1)) - node%y(element%node(:, 3))
-    C(:, 3, 3) = node%y(element%node(:, 2)) - node%y(element%node(:, 1))
+    C(:, 3, 1) = node%x(element%node(:, 3)) - node%x(element%node(:, 2))
+    C(:, 3, 2) = node%x(element%node(:, 1)) - node%x(element%node(:, 3))
+    C(:, 3, 3) = node%x(element%node(:, 2)) - node%x(element%node(:, 1))
 
     ! Calculate element area
     ! If the triangles are orthogonal then C is singular
@@ -54,6 +54,8 @@ subroutine calculation(node, element, P)
     ! Generate stiffness matrix
     K = 0
     do n = 1, num_elem
+        print "(16F7.1)", K
+        print *,
         do j = 1, 3
             do i = 1, 3
                 ni = element%node(n, i)
@@ -121,17 +123,17 @@ subroutine calculation(node, element, P)
 
 
     ! DEBUG
-    !print *, "** DEBUG **"
-    !print *,
+    print *, "** DEBUG **"
+    print *,
     print *, "STIFFNESS MATRIX"
-    print "(9F6.1)", K_free
+    print "(16F7.1)", K
     print *,
-    print *, "INVERTED STIFFNESS MATRIX"
-    print "(9F6.1)", inv(K_free)
+    print *, "INVERTED (FREE) STIFFNESS MATRIX"
+    print "(12F7.1)", inv(K_free)
     print *,
-    !print *, "f MATRIX"
-    !print "(F8.4)", f
-    !print *,
+    print *, "f MATRIX"
+    print "(F8.4)", f
+    print *,
     print *, "P MATRIX"
     print "(F8.4)", P
     print *,
