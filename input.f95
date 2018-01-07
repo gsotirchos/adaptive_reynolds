@@ -2,9 +2,10 @@ subroutine input(node, element)
 
     use types
     use parameters
+
     implicit none
 
-    type(fem_node), intent(out) :: node
+    type(fem_node),    intent(out) :: node
     type(fem_element), intent(out) :: element
 
     ! Allocate arrays
@@ -21,17 +22,20 @@ subroutine input(node, element)
 
     ! Generate node positions
     n = 0
+
     do j = 0, ysub
         do i = 0, xsub
             n = n + 1
+
             node%x(n) = i*dL
             node%y(n) = j*dB
         end do
     end do
 
 
-    ! Generate elements' nodes
+    ! Generate triangular elements' nodes
     n = -1
+
     do j = 1, ysub
         do i = 1, xsub
         n = n + 2
@@ -123,9 +127,9 @@ subroutine input(node, element)
 
 
     ! Generate elements' He
-    element%He = (node%H(element%node(:, 1)) + &
-                  node%H(element%node(:, 2)) + &
-                  node%H(element%node(:, 3)))/3
+    element%He = (  node%H(element%node(:, 1))   &
+                  + node%H(element%node(:, 2))   &
+                  + node%H(element%node(:, 3))  )/3
 
 
     ! Generate elements' c

@@ -10,7 +10,7 @@ module parameters
     real, parameter    :: L = 10.0, B = 10.0, &
                           dL = L/xsub, dB = B/xsub, &
                           ! Reynolds equation parameters
-                          hx = 1.0, hy = 1.3, &
+                          hx = 1.0, hy = 1.3, lambda = 0.0, &
                           P_bound = 0.0, q = 5.0, &
                           ! H = Ha*x + Hb
                           Ha = -0.1, Hb = 2.0
