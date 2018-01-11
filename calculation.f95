@@ -6,14 +6,14 @@ subroutine calculation(node, element, P)
 
     implicit none
 
-    type(fem_node),    intent(in) :: node
-    type(fem_element), intent(in) :: element
+    type(fem_node),    intent(in)  :: node
+    type(fem_element), intent(in)  :: element
+    real,              intent(out) :: P(size(node%x))
     
     real :: l12, l23, l31, &
             C(2:3, 3), A, &
-            KM(num_nodes, num_nodes), m, &
-            fc, f(num_nodes), &
-            P(num_nodes), &
+            KM(size(node%x), size(node%x)), m, &
+            fc, f(size(node%x)), &
             KM_free(count(node%stat == 1), count(node%stat == 1)), &
             f_free(count(node%stat == 1)), &
             P_free(count(node%stat == 1))
@@ -26,7 +26,7 @@ subroutine calculation(node, element, P)
     fc = 0
     f = 0
 
-    nth_element: do n = 1, num_elem
+    do n = 1, size(element%node, dim = 1)
 
         l12 = 0
         l23 = 0
@@ -97,7 +97,7 @@ subroutine calculation(node, element, P)
         f(n3) = f(n3) - fc + (l23*element%q(n, 2))/2 &
                            + (l31*element%q(n, 3))/2
 
-    end do nth_element
+    end do
 
 
     ! Generate isfree and isfixed matrices
