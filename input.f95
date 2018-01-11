@@ -53,22 +53,26 @@ subroutine input(node, element)
     ! Generate boundary values
     node%stat = 1
     node%p = 0
-    !! Nodes on y = 0
+
+    !! y = 0
     !where(node%y == 0)
     !    node%stat = 0
     !    node%P = P_bound
     !end where
-    ! Nodes on y = B
+
+    ! y = B
     where(node%y == B)
         node%stat = 0
         node%P = P_bound
     end where
-    ! Nodes on x = 0
+
+    ! x = 0
     where(node%x == 0)
         node%stat = 0
         node%P = P_bound
     end where
-    ! Nodes on x = L
+
+    ! x = L
     where(node%x == L)
         node%stat = 0
         node%P = P_bound
@@ -86,37 +90,40 @@ subroutine input(node, element)
     ! horizontal border with y = C -> sides "1-2"
     !   vertical border with x = C -> sides "3-1"
     ! Because dp/dy = 0 -> q = hx*dp/dx
-    element%q(:, 1) = 0
-    element%q(:, 2) = 0
-    element%q(:, 3) = 0
-    ! Sides with y = 0
-    where(node%y(element%node(:, 1)) == 0 .and. &
-          node%y(element%node(:, 2)) == 0)
-        element%q(:, 1) = q
-        element%q(:, 2) = 0
-        element%q(:, 3) = 0
-    end where
-    !! Sides with y = B
-    !where(node%y(element%node(:, 1)) == B .and. &
-    !      node%y(element%node(:, 2)) == B)
-    !    element%q(:, 1) = q
-    !    element%q(:, 2) = 0
-    !    element%q(:, 3) = 0
-    !end where
-    !! Sides with x = 0
-    !where(node%x(element%node(:, 3)) == 0 .and. &
-    !      node%x(element%node(:, 1)) == 0)
-    !    element%q(:, 1) = 0
-    !    element%q(:, 2) = 0
-    !    element%q(:, 3) = q
-    !end where
-    !! Sides with x = L
-    !where(node%x(element%node(:, 3)) == L .and. &
-    !      node%x(element%node(:, 1)) == L)
-    !    element%q(:, 1) = 0
-    !    element%q(:, 2) = 0
-    !    element%q(:, 3) = q
-    !end where
+    element%q = 0
+    
+    do n = 1, num_elem
+        do n1 = 1, elem_nodes
+            n2 = mod(n1 + 3, 3) + 1
+
+    same_y: if (node%y(element%node(n, n1)) == &
+                node%y(element%node(n, n2))) then
+                ! y = 0
+                if (node%y(element%node(n, n1)) == 0) then
+                    element%q(n, n1) = q
+                end if
+
+                !! y = B
+                !if (node%y(element%node(n, n1)) == 0) then
+                !    element%q(n, n1) = q
+                !end if
+            end if same_y
+
+    !same_x: if (node%x(element%node(n, n1)) == &
+    !            node%x(element%node(n, n2))) then
+    !            ! x = 0
+    !            if (node%x(element%node(n, n1)) == 0) then
+    !                element%q(n, n1) = q
+    !            end if
+
+    !            ! x = L
+    !            if (node%x(element%node(n, n1)) == 0) then
+    !                element%q(n, n1) = q
+    !            end if
+    !        end if same_x
+
+        end do
+    end do
 
 
     ! Generate H on nodes
@@ -146,15 +153,15 @@ subroutine input(node, element)
     !        node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
     !end do
     !print *,
-    !print *, "ELEMENTS"
-    !print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
-    !                        "q12", "q23", "q31", &
-    !                        "He", "c"
-    !do i = 0, (num_elem + 1)
-    !    print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
-    !        element%node(i, 1), element%node(i, 2), element%node(i, 3), &
-    !        element%q(i, 1), element%q(i, 2), element%q(i, 3), &
-    !        element%He(i), element%c(i)
-    !end do
+    print *, "ELEMENTS"
+    print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
+                            "q12", "q23", "q31", &
+                            "He", "c"
+    do i = 0, (num_elem + 1)
+        print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
+            element%node(i, 1), element%node(i, 2), element%node(i, 3), &
+            element%q(i, 1), element%q(i, 2), element%q(i, 3), &
+            element%He(i), element%c(i)
+    end do
 
 end subroutine input
