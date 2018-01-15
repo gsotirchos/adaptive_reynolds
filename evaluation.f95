@@ -53,20 +53,20 @@ subroutine evaluation(node, element, P, split)
         end do
 
         ! Calculate triangles' sides' lengths
-        l12 = sqrt(  (  node%x(element%node(n, 2))         &
-                      - node%x(element%node(n, 1))  )**2   &
-                   + (  node%y(element%node(n, 2))         &
-                      - node%y(element%node(n, 1))  )**2  )
+        l12 = dist([node%x(element%node(n, 1)),  &
+                    node%y(element%node(n, 1))], &
+                   [node%x(element%node(n, 2)),  &
+                    node%y(element%node(n, 2))])
 
-        l23 = sqrt(  (  node%x(element%node(n, 3))         &
-                      - node%x(element%node(n, 2))  )**2   &
-                   + (  node%y(element%node(n, 3))         &
-                      - node%y(element%node(n, 2))  )**2  )
+        l23 = dist([node%x(element%node(n, 2)),  &
+                    node%y(element%node(n, 2))], &
+                   [node%x(element%node(n, 3)),  &
+                    node%y(element%node(n, 3))])
 
-        l31 = sqrt(  (  node%x(element%node(n, 1))         &
-                      - node%x(element%node(n, 3))  )**2   &
-                   + (  node%y(element%node(n, 1))         &
-                      - node%y(element%node(n, 3))  )**2  )
+        l31 = dist([node%x(element%node(n, 3)),  &
+                    node%y(element%node(n, 3))], &
+                   [node%x(element%node(n, 1)),  &
+                    node%y(element%node(n, 1))])
 
         ! Calculate element's area
         A(n) = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2

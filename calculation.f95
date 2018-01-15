@@ -35,20 +35,20 @@ subroutine calculation(node, element, P)
         C = 0
 
         ! Calculate triangles' sides' lengths
-        l12 = sqrt(  (  node%x(element%node(n, 2))         &
-                      - node%x(element%node(n, 1))  )**2   &
-                   + (  node%y(element%node(n, 2))         &
-                      - node%y(element%node(n, 1))  )**2  )
+        l12 = dist([node%x(element%node(n, 1)),  &
+                    node%y(element%node(n, 1))], &
+                   [node%x(element%node(n, 2)),  &
+                    node%y(element%node(n, 2))])
 
-        l23 = sqrt(  (  node%x(element%node(n, 3))         &
-                      - node%x(element%node(n, 2))  )**2   &
-                   + (  node%y(element%node(n, 3))         &
-                      - node%y(element%node(n, 2))  )**2  )
+        l23 = dist([node%x(element%node(n, 2)),  &
+                    node%y(element%node(n, 2))], &
+                   [node%x(element%node(n, 3)),  &
+                    node%y(element%node(n, 3))])
 
-        l31 = sqrt(  (  node%x(element%node(n, 1))         &
-                      - node%x(element%node(n, 3))  )**2   &
-                   + (  node%y(element%node(n, 1))         &
-                      - node%y(element%node(n, 3))  )**2  )
+        l31 = dist([node%x(element%node(n, 3)),  &
+                    node%y(element%node(n, 3))], &
+                   [node%x(element%node(n, 1)),  &
+                    node%y(element%node(n, 1))])
 
         ! Generate the 2nd and 3rd row of C matrix
         C(2, 1) = node%y(element%node(n, 2)) - node%y(element%node(n, 3))
@@ -75,7 +75,7 @@ subroutine calculation(node, element, P)
                 ni = element%node(n, i)
 
                 KM(ni, nj) = KM(ni, nj) + A*(  hx*C(2, i)*C(2, j)   &
-                                           + hy*C(3, i)*C(3, j)  )
+                                             + hy*C(3, i)*C(3, j)  )
 
                 KM(ni, nj) = KM(ni, nj) - m
             end do
