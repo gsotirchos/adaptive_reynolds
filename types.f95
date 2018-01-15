@@ -35,7 +35,22 @@ contains
 
     end subroutine alloc_node
 
-    ! subroutine to allocate element
+    ! subroutine to deallocate nodes
+    subroutine dealloc_node(node)
+
+        implicit none
+
+        type(fem_node) :: node
+
+        deallocate(node%x)
+        deallocate(node%y)
+        deallocate(node%stat)
+        deallocate(node%P)
+        deallocate(node%H)
+
+    end subroutine dealloc_node
+
+    ! subroutine to allocate elements
     subroutine alloc_elem(element, n, elem_nodes)
 
         implicit none
@@ -50,6 +65,22 @@ contains
 
     end subroutine alloc_elem
 
+    ! subroutine to deallocate nodes
+    subroutine dealloc_elem(element)
+
+        implicit none
+
+        type(fem_element) :: element
+
+        deallocate(element%node)
+        deallocate(element%q)
+        deallocate(element%He)
+        deallocate(element%c)
+
+    end subroutine dealloc_elem
+
+
+    ! Function to calculate distance between two points
     pure function dist(point1, point2)
 
         implicit none
