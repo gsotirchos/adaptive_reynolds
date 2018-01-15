@@ -117,33 +117,33 @@ subroutine evaluation(node, element, P, split)
 
     ! DEBUG
     !print *, "** DEBUG **"
-    print *,
-    print *, "Element dP"
-    print *, "/dx"
-    print "(6F6.2)", elem_dP(:, 1)
-    print *, "/dy"
-    print "(6F6.2)", elem_dP(:, 2)
-    print *,
-    print *, "Node dP"
-    print *, "/dx"
-    print "(4F6.2)", node_dP(:, 1)
-    print *, "/dy"
-    print "(4F6.2)", node_dP(:, 2)
-    print *,
-    print *, "Element Estimated dP"
-    print *, "/dx"
-    print "(6F6.2)", estm_dP(:, 1)
-    print *, "/dy"
-    print "(6F6.2)", estm_dP(:, 2)
-    print *,
-    print *, "Error Norm"
-    print "(6F6.2)", err_norm
-    print *,
-    print *, "Mean:", mean_err
-    print *, "Variance", var_err
-    print *, "Standard Deviation", stdev_err
-    print *,
-    print *, "Splits"
-    print "(I1)", split
+    !print *,
+    !print *, "Element dP"
+    !print *, "/dx"
+    !print "(6F6.2)", elem_dP(:, 1)
+    !print *, "/dy"
+    !print "(6F6.2)", elem_dP(:, 2)
+    !print *,
+    !print *, "Node dP"
+    !print *, "/dx"
+    !print "(4F6.2)", node_dP(:, 1)
+    !print *, "/dy"
+    !print "(4F6.2)", node_dP(:, 2)
+    !print *,
+    !print *, "Element Estimated dP"
+    !print *, "/dx"
+    !print "(6F6.2)", estm_dP(:, 1)
+    !print *, "/dy"
+    !print "(6F6.2)", estm_dP(:, 2)
+    !print *,
+    !print *, "Error Norm"
+    !print "(6F6.2)", err_norm
+    !print *,
+    !print *, "Mean:", mean_err
+    !print *, "Variance", var_err
+    !print *, "Standard Deviation", stdev_err
+    !print *,
+    !print *, "Splits"
+    !print "(I1)", split
 
 end subroutine evaluation
