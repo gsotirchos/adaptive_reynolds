@@ -10,17 +10,20 @@ subroutine evaluation(node, element, P, split)
     real,                 intent(in)  :: P(size(node%x))
     integer,              intent(out) :: split(size(element%node, dim = 1))
 
-    real :: C(2:3, 3), &
-            l12, l23, l31, &
-            A(size(element%node, dim = 1)), &
-            elem_dP(size(element%node, dim = 1), 2), &
-            node_dP(size(node%x), 2), &
-            estm_dP(size(element%node, dim = 1), 2), &
-            err_norm(size(element%node, dim = 1)), &
-            mean_err, var_err, stdev_err
+    real    :: C(2:3, 3), &
+               l12, l23, l31, &
+               A(size(element%node, dim = 1)), &
+               elem_dP(size(element%node, dim = 1), 2), &
+               node_dP(size(node%x), 2), &
+               estm_dP(size(element%node, dim = 1), 2), &
+               err_norm(size(element%node, dim = 1)), &
+               mean_err, var_err, stdev_err
+
+    integer :: cnt(size(node%x))
 
 
     elem_dP = 0
+    cnt = 0
     node_dP = 0
 
     do n = 1, size(elem_dP, dim = 1)
@@ -42,9 +45,11 @@ subroutine evaluation(node, element, P, split)
         ! Apply element's contribution on its nodes' derivatives' estimation
         do i = 1, size(element%node, dim = 2)
             node_dP(element%node(n, i), 1) = node_dP(element%node(n, i), 1)&
-                                             + elem_dP(n, 1)/6
+                                             + elem_dP(n, 1)
             node_dP(element%node(n, i), 2) = node_dP(element%node(n, i), 2)&
-                                             + elem_dP(n, 2)/6
+                                             + elem_dP(n, 2)
+
+            cnt(element%node(n, i)) = cnt(element%node(n, i)) + 1
         end do
 
         ! Calculate triangles' sides' lengths
@@ -69,6 +74,8 @@ subroutine evaluation(node, element, P, split)
 
     end do
 
+    node_dP(:, 1) = node_dP(:, 1)/cnt
+    node_dP(:, 2) = node_dP(:, 2)/cnt
 
     estm_dP = 0
     err_norm = 0
@@ -88,11 +95,9 @@ subroutine evaluation(node, element, P, split)
     mean_err = sum(err_norm)/size(err_norm)
 
     ! Calculate Error Norm Variance and Standard Deviation
-    do i = 1, size(err_norm)
-        var_err = var_err + err_norm(i)**2
-    end do
-
+    var_err = sum(err_norm**2)
     var_err = (var_err - size(err_norm)*mean_err**2)/(size(err_norm) - 1)
+
     stdev_err = sqrt(var_err)
 
 
@@ -100,11 +105,11 @@ subroutine evaluation(node, element, P, split)
     split = 0
 
     do n = 1, size(element%node, dim = 1)
-        do i = 1, 6
-            if (err_norm(n) < mean_err + i*0.5*stdev_err &
+        do i = 1, 7
+            if (      err_norm(n) < mean_err + i*0.5*stdev_err &
                 .and. err_norm(n) > mean_err + (i-1)*0.5*stdev_err) then
             split(n) = i
-            cycle
+            exit
             end if
         end do
     end do
@@ -114,7 +119,10 @@ subroutine evaluation(node, element, P, split)
     !print *, "** DEBUG **"
     print *,
     print *, "Element dP"
-    print "(6F6.2)", elem_dP
+    print *, "/dx"
+    print "(6F6.2)", elem_dP(:, 1)
+    print *, "/dy"
+    print "(6F6.2)", elem_dP(:, 2)
     print *,
     print *, "Node dP"
     print *, "/dx"
@@ -136,6 +144,6 @@ subroutine evaluation(node, element, P, split)
     print *, "Standard Deviation", stdev_err
     print *,
     print *, "Splits"
-    print "(I2)", split
+    print "(I1)", split
 
 end subroutine evaluation
