@@ -1,4 +1,4 @@
-program reynolds_main
+program main
 
     use types
 
@@ -22,4 +22,4 @@ program reynolds_main
 
     call evaluation(node, element, P, split)
 
-end program reynolds_main
+end program main
