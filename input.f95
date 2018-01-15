@@ -9,16 +9,8 @@ subroutine input(node, element)
     type(fem_element), intent(out) :: element
 
     ! Allocate arrays
-    allocate(node%x(num_nodes))
-    allocate(node%y(num_nodes))
-    allocate(node%stat(num_nodes))
-    allocate(node%P(num_nodes))
-    allocate(node%H(num_nodes))
-
-    allocate(element%node(num_elem, elem_nodes))
-    allocate(element%q(num_elem, elem_nodes))
-    allocate(element%He(num_elem))
-    allocate(element%c(num_elem))
+    call alloc_node(node, num_nodes)
+    call alloc_elem(element, num_elem, elem_nodes)
 
     ! Generate node positions
     n = 0

@@ -17,4 +17,37 @@ module types
         real, allocatable :: c(:) ! parameter c of element
     end type fem_element
 
+contains
+
+    ! subroutine to allocate nodes
+    subroutine alloc_node(node, n)
+
+        implicit none
+
+        integer, intent(in) :: n
+        type(fem_node)      :: node
+
+        allocate(node%x(n))
+        allocate(node%y(n))
+        allocate(node%stat(n))
+        allocate(node%P(n))
+        allocate(node%H(n))
+
+    end subroutine alloc_node
+
+    ! subroutine to allocate element
+    subroutine alloc_elem(element, n, elem_nodes)
+
+        implicit none
+
+        integer, intent(in) :: n, elem_nodes
+        type(fem_element)   :: element
+
+        allocate(element%node(n, elem_nodes))
+        allocate(element%q(n, elem_nodes))
+        allocate(element%He(n))
+        allocate(element%c(n))
+
+    end subroutine alloc_elem
+
 end module types
