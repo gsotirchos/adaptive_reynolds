@@ -5,7 +5,7 @@ module types
     type fem_node
         real, allocatable :: x(:)
         real, allocatable :: y(:)
-        integer, allocatable :: stat(:) ! 0: prescribed, 1: free
+        integer, allocatable :: stat(:) ! 0: free, 1: prescribed
         real, allocatable :: P(:) ! nodal prescribed dimensionless pressure
         real, allocatable :: H(:) ! nodal dimensionless height
     end type fem_node

@@ -1,4 +1,4 @@
-subroutine evaluation(node, element, P, splits)
+subroutine evaluate(node, element, P, splits)
 
     use types
     use parameters
@@ -25,6 +25,7 @@ subroutine evaluation(node, element, P, splits)
     elem_dP = 0
     cnt = 0
     node_dP = 0
+    A = 0
 
     do n = 1, size(elem_dP, dim = 1)
 
@@ -70,7 +71,7 @@ subroutine evaluation(node, element, P, splits)
 
         ! Calculate element's area
         A(n) = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
-        if (A(n) == 0) A(n) = (l12*l31)/2
+        !if (A(n) == 0) A(n) = (l12*l31)/2
 
     end do
 
@@ -105,9 +106,9 @@ subroutine evaluation(node, element, P, splits)
     splits = 0
 
     do n = 1, size(element%node, dim = 1)
-        do i = 1, 7
-            if (      err_norm(n) < mean_err + i*0.5*stdev_err &
-                .and. err_norm(n) > mean_err + (i-1)*0.5*stdev_err) then
+        do i = 1, 4
+            if (      err_norm(n) < mean_err + i**stdev_err &
+                .and. err_norm(n) > mean_err + (i-1)*stdev_err) then
             splits(n) = i
             exit
             end if
@@ -145,5 +146,7 @@ subroutine evaluation(node, element, P, splits)
     !print *,
     print *, "Splits"
     print "(I1)", splits
+    print *, "Max splits:", maxval(splits)
+    print *,
 
-end subroutine evaluation
+end subroutine evaluate

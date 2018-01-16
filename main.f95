@@ -9,7 +9,7 @@ program main
     real,    allocatable :: P(:)
     integer, allocatable :: splits(:)
 
-    integer :: tries_left
+    integer :: tries_left, i
 
     ! Data input
     call input(node, element)
@@ -17,34 +17,34 @@ program main
     allocate(P(size(node%x)))
 
     ! Calculation
-    call calculation(node, element, P)
+    call calculate(node, element, P)
 
     allocate(splits(size(element%c)))
 
     ! Evaluation
-    call evaluation(node, element, P, splits)
+    call evaluate(node, element, P, splits)
     
     ! If there is any split necessary then adapt
-    tries_left = 20
+    tries_left = 15
 
-    do while (any(splits > 0))
+    !do while (any(splits > 0))
         tries_left = tries_left - 1
 
         ! Adaptation
         print *, "adapting...", tries_left, "tries left"
-        call adaptation(node, element, splits)
+        call adapt(node, element, splits)
 
         ! Re-calculation
-        call calculation(node, element, P)
+        call calculate(node, element, P)
 
         ! Re-evaluation
-        call evaluation(node, element, P, splits)
+        call evaluate(node, element, P, splits)
 
         ! If no tries are left exit
         if (tries_left == 0) then
-            print *, "Aborted at 20 tries"
-            exit
+            print *, "Aborted, ran out of tries"
+    !        exit
         end if
-    end do
+    !end do
 
 end program main

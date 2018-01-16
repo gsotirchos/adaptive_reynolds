@@ -1,4 +1,4 @@
-subroutine calculation(node, element, P)
+subroutine calculate(node, element, P)
 
     use types
     use parameters
@@ -14,12 +14,12 @@ subroutine calculation(node, element, P)
             C(2:3, 3), A, &
             KM(size(node%x), size(node%x)), m, &
             fc, f(size(node%x)), &
-            KM_free(count(node%stat == 1), count(node%stat == 1)), &
-            f_free(count(node%stat == 1)), &
-            P_free(count(node%stat == 1))
+            KM_free(count(node%stat == 0), count(node%stat == 0)), &
+            f_free(count(node%stat == 0)), &
+            P_free(count(node%stat == 0))
 
-    integer :: isfixed(count(node%stat == 0)), &
-               isfree(count(node%stat == 1))
+    integer :: isfixed(count(node%stat == 1)), &
+               isfree(count(node%stat == 0))
 
 
     KM = 0
@@ -27,12 +27,6 @@ subroutine calculation(node, element, P)
     f = 0
 
     do n = 1, size(element%node, dim = 1)
-
-        l12 = 0
-        l23 = 0
-        l31 = 0
-        A = 0
-        C = 0
 
         ! Calculate triangles' sides' lengths
         l12 = dist([node%x(element%node(n, 1)),  &
@@ -62,7 +56,7 @@ subroutine calculation(node, element, P)
         ! If the triangles are orthogonal then C is singular
         ! and the area is calculated by width*height/2
         A = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
-        if (A == 0) A = (l12*l31)/2
+        !if (A == 0) A = (l12*l31)/2
 
         ! Calculate mass matrix element m
         m = lambda*A/12
@@ -105,10 +99,10 @@ subroutine calculation(node, element, P)
     n2 = 0
 
     do i = 1, size(node%stat)
-        if (node%stat(i) == 0) then
+        if (node%stat(i) == 1) then
             n1 = n1 + 1
             isfixed(n1) = i
-        else if (node%stat(i) == 1) then
+        else if (node%stat(i) == 0) then
             n2 = n2 + 1
             isfree(n2) = i
         end if
@@ -153,10 +147,10 @@ subroutine calculation(node, element, P)
     !print *, "f MATRIX"
     !print "(F8.4)", f
     !print *,
-    !print *, "p matrix"
-    !print "(f8.4)", p
-    !print *,
+    print *, "p matrix"
+    print "(f8.4)", p
+    print *,
     !print *, "Free:", isfree
     !print *, "Fixed:", isfixed
 
-end subroutine calculation
+end subroutine calculate
