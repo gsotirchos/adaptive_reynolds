@@ -153,9 +153,9 @@ subroutine calculation(node, element, P)
     !print *, "f MATRIX"
     !print "(F8.4)", f
     !print *,
-    print *, "p matrix"
-    print "(f8.4)", p
-    print *,
+    !print *, "p matrix"
+    !print "(f8.4)", p
+    !print *,
     !print *, "Free:", isfree
     !print *, "Fixed:", isfixed
 

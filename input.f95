@@ -26,6 +26,14 @@ subroutine input(node, element)
 
 
     ! Generate triangular elements' nodes
+    ! Element pairs are defined as follows
+    !   3     2_____1 
+    !   |\     \    |
+    !   | \     \(2)|
+    !   |  \     \  |    y
+    !   |(1)\     \ |   |
+    !  1|____\2    \|3  |___x
+
     n = -1
 
     do j = 1, ysub
@@ -72,15 +80,6 @@ subroutine input(node, element)
 
 
     ! Generate boundary flow
-    ! Element pairs are defined as follows
-    !   3     2_____1 
-    !   |\     \    |
-    !   | \     \(2)|
-    !   |  \     \  |    y
-    !   |(1)\     \ |   |
-    !  1|____\2    \|3  |___x
-    ! horizontal border with y = C -> sides "1-2"
-    !   vertical border with x = C -> sides "3-1"
     ! Because dp/dy = 0 -> q = hx*dp/dx
     element%q = 0
     

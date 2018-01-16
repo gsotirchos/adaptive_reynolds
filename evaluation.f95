@@ -1,4 +1,4 @@
-subroutine evaluation(node, element, P, split)
+subroutine evaluation(node, element, P, splits)
 
     use types
     use parameters
@@ -8,15 +8,15 @@ subroutine evaluation(node, element, P, split)
     type(fem_node),       intent(in)  :: node
     type(fem_element),    intent(in)  :: element
     real,                 intent(in)  :: P(size(node%x))
-    integer,              intent(out) :: split(size(element%node, dim = 1))
+    integer,              intent(out) :: splits(size(element%c))
 
     real    :: C(2:3, 3), &
                l12, l23, l31, &
-               A(size(element%node, dim = 1)), &
-               elem_dP(size(element%node, dim = 1), 2), &
+               A(size(element%c)), &
+               elem_dP(size(element%c), 2), &
                node_dP(size(node%x), 2), &
-               estm_dP(size(element%node, dim = 1), 2), &
-               err_norm(size(element%node, dim = 1)), &
+               estm_dP(size(element%c), 2), &
+               err_norm(size(element%c)), &
                mean_err, var_err, stdev_err
 
     integer :: cnt(size(node%x))
@@ -43,7 +43,7 @@ subroutine evaluation(node, element, P, split)
         end do
 
         ! Apply element's contribution on its nodes' derivatives' estimation
-        do i = 1, size(element%node, dim = 2)
+        do i = 1, 3
             node_dP(element%node(n, i), 1) = node_dP(element%node(n, i), 1)&
                                              + elem_dP(n, 1)
             node_dP(element%node(n, i), 2) = node_dP(element%node(n, i), 2)&
@@ -102,13 +102,13 @@ subroutine evaluation(node, element, P, split)
 
 
     ! Assign splits
-    split = 0
+    splits = 0
 
     do n = 1, size(element%node, dim = 1)
         do i = 1, 7
             if (      err_norm(n) < mean_err + i*0.5*stdev_err &
                 .and. err_norm(n) > mean_err + (i-1)*0.5*stdev_err) then
-            split(n) = i
+            splits(n) = i
             exit
             end if
         end do
@@ -143,7 +143,7 @@ subroutine evaluation(node, element, P, split)
     !print *, "Variance", var_err
     !print *, "Standard Deviation", stdev_err
     !print *,
-    !print *, "Splits"
-    !print "(I1)", split
+    print *, "Splits"
+    print "(I1)", splits
 
 end subroutine evaluation
