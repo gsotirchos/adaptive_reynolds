@@ -33,7 +33,6 @@ subroutine input(node, element)
     !   |  \     \  |    y
     !   |(1)\     \ |   |
     !  1|____\2    \|3  |___x
-
     n = -1
 
     do j = 1, ysub

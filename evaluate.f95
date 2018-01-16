@@ -38,7 +38,7 @@ subroutine evaluate(node, element, P, splits)
         C(3, 3) = node%x(element%node(n, 2)) - node%x(element%node(n, 1))
 
         ! Calculate element's Pressure 1st Derivatives
-        do i = 1, size(element%node, dim = 2)
+        do i = 1, 3
             elem_dP(n, 1) = elem_dP(n, 1) + C(2, i)*P(element%node(n, i))
             elem_dP(n, 2) = elem_dP(n, 2) + C(3, i)*P(element%node(n, i))
         end do
@@ -50,6 +50,7 @@ subroutine evaluate(node, element, P, splits)
             node_dP(element%node(n, i), 2) = node_dP(element%node(n, i), 2)&
                                              + elem_dP(n, 2)
 
+            ! Add its contribution to the counter
             cnt(element%node(n, i)) = cnt(element%node(n, i)) + 1
         end do
 
@@ -78,11 +79,13 @@ subroutine evaluate(node, element, P, splits)
     node_dP(:, 1) = node_dP(:, 1)/cnt
     node_dP(:, 2) = node_dP(:, 2)/cnt
 
+
+    ! Calculate pressure's derivatives' estimation and element error norm
     estm_dP = 0
     err_norm = 0
 
     do n = 1, size(elem_dP, dim = 1)
-        do i = 1, size(element%node, dim = 2)
+        do i = 1, 3
             estm_dP(n, 1) = estm_dP(n, 1) + node_dP(element%node(n, i), 1)/3
             estm_dP(n, 2) = estm_dP(n, 2) + node_dP(element%node(n, i), 2)/3
         end do
@@ -106,9 +109,9 @@ subroutine evaluate(node, element, P, splits)
     splits = 0
 
     do n = 1, size(element%node, dim = 1)
-        do i = 1, 4
-            if (      err_norm(n) < mean_err + i**stdev_err &
-                .and. err_norm(n) > mean_err + (i-1)*stdev_err) then
+        do i = 1, 7
+            if (      err_norm(n) < mean_err + i*0.5*stdev_err &
+                .and. err_norm(n) > mean_err + (i-1)*0.5*stdev_err) then
             splits(n) = i
             exit
             end if
@@ -116,7 +119,7 @@ subroutine evaluate(node, element, P, splits)
     end do
 
 
-    ! DEBUG
+    !! DEBUG
     !print *, "** DEBUG **"
     !print *,
     !print *, "Element dP"
@@ -140,13 +143,15 @@ subroutine evaluate(node, element, P, splits)
     !print *, "Error Norm"
     !print "(6F6.2)", err_norm
     !print *,
-    !print *, "Mean:", mean_err
-    !print *, "Variance", var_err
-    !print *, "Standard Deviation", stdev_err
+    print *, "Mean:", mean_err
+    !print *, "Variance:", var_err
+    print *, "Standard Deviation:", stdev_err
     !print *,
-    print *, "Splits"
-    print "(I1)", splits
-    print *, "Max splits:", maxval(splits)
+    !print *, "Splits"
+    !print "(I1)", splits
+    print *, "zeros/total splits:", &
+             real(count(splits == 0))/real(size(splits))
+    print *, "Max split:", maxval(splits)
     print *,
 
 end subroutine evaluate

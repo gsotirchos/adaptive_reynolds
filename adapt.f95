@@ -34,27 +34,27 @@ subroutine adapt(node, element, splits)
     end do
 
 
-    ! DEBUG
-    print *, "** DEBUG **"
-    print *,
-    print *, "NODES"
-    print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
-    do i = 0, (size(node%x) + 1)
-        print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
-            node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
-    end do
-    print *,
-    print *, "ELEMENTS"
-    print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
-                            "q12", "q23", "q31", &
-                            "He", "c"
-    do i = 0, (size(element%c) + 1)
-        print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
-            element%node(i, 1), element%node(i, 2), element%node(i, 3), &
-            element%q(i, 1), element%q(i, 2), element%q(i, 3), &
-            element%He(i), element%c(i)
-    end do
-    print *,
+    !! DEBUG
+    !print *, "** DEBUG **"
+    !print *,
+    !print *, "NODES"
+    !print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
+    !do i = 0, (size(node%x) + 1)
+    !    print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
+    !        node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
+    !end do
+    !print *,
+    !print *, "ELEMENTS"
+    !print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
+    !                        "q12", "q23", "q31", &
+    !                        "He", "c"
+    !do i = 0, (size(element%c) + 1)
+    !    print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
+    !        element%node(i, 1), element%node(i, 2), element%node(i, 3), &
+    !        element%q(i, 1), element%q(i, 2), element%q(i, 3), &
+    !        element%He(i), element%c(i)
+    !end do
+    !print *,
 
 
 contains
