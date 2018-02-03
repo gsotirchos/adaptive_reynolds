@@ -2,6 +2,20 @@ module linear_algebra
 
 contains
 
+    ! Function to calculate distance between two points p1 and p2
+    pure function dist(p1, p2)
+
+        implicit none
+
+        real, intent(in)  :: p1(2), p2(2)
+        real :: dist
+
+        dist = sqrt(  (p2(1) - p1(1))**2   &
+                    + (p2(2) - p1(2))**2  )
+
+    end function dist
+
+
     ! Simple matrix inversion function
     ! The calculation is done using Gaussian Elimination
     pure function inv(AA) result(invA)

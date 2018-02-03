@@ -2,6 +2,7 @@ subroutine evaluate(node, element, P, splits)
 
     use types
     use parameters
+    use linear_algebra
 
     implicit none
 

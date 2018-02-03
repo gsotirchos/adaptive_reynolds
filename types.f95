@@ -79,18 +79,4 @@ contains
 
     end subroutine dealloc_elem
 
-
-    ! Function to calculate distance between two points
-    pure function dist(point1, point2)
-
-        implicit none
-
-        real, intent(in)  :: point1(2), point2(2)
-        real :: dist
-
-        dist = sqrt(  (point2(1) - point1(1))**2   &
-                    + (point2(2) - point1(2))**2  )
-
-    end function dist
-
 end module types
