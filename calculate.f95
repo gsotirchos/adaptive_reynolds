@@ -2,7 +2,7 @@ subroutine calculate(node, element, P)
 
     use types
     use parameters
-    use invert
+    use linear_algebra
 
     implicit none
 
