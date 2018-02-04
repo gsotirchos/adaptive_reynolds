@@ -21,7 +21,12 @@ module types
     interface extend
         module procedure ExtendArray_real, ExtendArray_int, &
                          ExtendMatrix_real, ExtendMatrix_int
-    end interface
+    end interface extend
+
+    ! Interface the two types of "order" function
+    interface order
+        module procedure order_real, order_int
+    end interface order
 
 contains
 
@@ -243,5 +248,50 @@ contains
         deallocate(temp)
 
     end subroutine ExtendMatrix_int
+
+
+    ! Function which exoprts the order of ascending 
+    ! elements of real array A
+    pure function order_real(A) result(order)
+
+        implicit none
+
+        real, intent(in)     :: A(:)
+        real                 :: CurMin
+        integer, allocatable :: order(:)
+        integer              :: n, i
+
+        allocate(order(size(A)))
+
+        CurMin = minval(A) - 1
+
+        do n = 1, size(order)
+            order(n) = minloc(A, dim = 1, mask = (A > CurMin))
+            CurMin = minval(A, mask = (A > CurMin))
+        end do
+        
+    end function order_real
+
+
+    ! Same for integer array A
+    pure function order_int(A) result(order)
+
+        implicit none
+
+        integer, intent(in)  :: A(:)
+        integer              :: CurMin
+        integer, allocatable :: order(:)
+        integer              :: n, i
+
+        allocate(order(size(A)))
+
+        CurMin = minval(A) - 1
+
+        do n = 1, size(order)
+            order(n) = minloc(A, dim = 1, mask = (A > CurMin))
+            CurMin = minval(A, mask = (A > CurMin))
+        end do
+        
+    end function order_int
 
 end module types
