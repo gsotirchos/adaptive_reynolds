@@ -19,7 +19,8 @@ module types
 
     ! Interface the two types of "extend" subroutines
     interface extend
-        module procedure ExtendArray, ExtendMatrix
+        module procedure ExtendArray_real, ExtendArray_int, &
+                         ExtendMatrix_real, ExtendMatrix_int
     end interface
 
 contains
@@ -40,6 +41,7 @@ contains
 
     end subroutine alloc_node
 
+
     ! subroutine to deallocate nodes
     subroutine dealloc_node(node)
 
@@ -54,6 +56,7 @@ contains
         deallocate(node%H)
 
     end subroutine dealloc_node
+
 
     ! subroutine to allocate elements
     subroutine alloc_elem(element, n, elem_nodes)
@@ -70,6 +73,7 @@ contains
 
     end subroutine alloc_elem
 
+
     ! subroutine to deallocate nodes
     subroutine dealloc_elem(element)
 
@@ -84,48 +88,10 @@ contains
 
     end subroutine dealloc_elem
 
-    ! Subroutine to add "len" number of rows after "loc" location
-    ! in a matrix
-    subroutine ExtendMatrix(A, loc, len)
-
-        implicit none
-
-        real, allocatable   :: A(:, :), temp(:, :)
-        integer             :: n, m
-        integer, intent(in) :: loc, len
-
-        n = size(A, dim = 1)
-        m = size(A, dim = 2)
-        allocate(temp(n, m))
-
-
-        if (loc > n .or. loc < 0) then
-            print *, "Error: can't extend matrix on given location"
-            return
-        end if
-
-        if (len + loc < 0) then
-            print *, "Error: can't extend matrix with given length"
-            return
-        end if
-
-
-        temp = A
-
-        deallocate(A)
-        allocate(A((n + len), m))
-
-        A(:loc, :) = temp(:loc, :)
-        A((loc + len + 1):, :) = temp((loc + 1):, :)
-        A((loc + 1):(loc + len), :) = 0
-
-        deallocate(temp)
-
-    end subroutine ExtendMatrix
 
     ! Subroutine to add "len" number of rows after "loc" location
     ! in an array
-    subroutine ExtendArray(A, loc, len)
+    subroutine ExtendArray_real(A, loc, len)
 
         implicit none
 
@@ -138,12 +104,12 @@ contains
 
 
         if (loc > n .or. loc < 0) then
-            print *, "Error: can't extend matrix on given location"
+            print *, "Error: cannot extend matrix on given location"
             return
         end if
 
         if (len + loc < 0) then
-            print *, "Error: can't extend matrix with given length"
+            print *, "Error: cannot extend matrix by given length"
             return
         end if
 
@@ -159,6 +125,123 @@ contains
 
         deallocate(temp)
 
-    end subroutine ExtendArray
+    end subroutine ExtendArray_real
+
+
+    ! Same for integer array
+    subroutine ExtendArray_int(A, loc, len)
+
+        implicit none
+
+        integer, allocatable :: A(:), temp(:)
+        integer              :: n
+        integer, intent(in)  :: loc, len
+
+        n = size(A)
+        allocate(temp(n))
+
+
+        if (loc > n .or. loc < 0) then
+            print *, "Error: cannot extend matrix on given location"
+            return
+        end if
+
+        if (len + loc < 0) then
+            print *, "Error: cannot extend matrix by given length"
+            return
+        end if
+
+
+        temp = A
+
+        deallocate(A)
+        allocate(A(n + len))
+
+        A(:loc) = temp(:loc)
+        A((loc + len + 1):) = temp((loc + 1):)
+        A((loc + 1):(loc + len)) = 0
+
+        deallocate(temp)
+
+    end subroutine ExtendArray_int
+
+
+    ! Subroutine to add "len" number of rows after "loc" location
+    ! in a matrix
+    subroutine ExtendMatrix_real(A, loc, len)
+
+        implicit none
+
+        real, allocatable   :: A(:, :), temp(:, :)
+        integer             :: n, m
+        integer, intent(in) :: loc, len
+
+        n = size(A, dim = 1)
+        m = size(A, dim = 2)
+        allocate(temp(n, m))
+
+
+        if (loc > n .or. loc < 0) then
+            print *, "Error: cannot extend matrix on given location"
+            return
+        end if
+
+        if (len + loc < 0) then
+            print *, "Error: cannot extend matrix by given length"
+            return
+        end if
+
+
+        temp = A
+
+        deallocate(A)
+        allocate(A((n + len), m))
+
+        A(:loc, :) = temp(:loc, :)
+        A((loc + len + 1):, :) = temp((loc + 1):, :)
+        A((loc + 1):(loc + len), :) = 0
+
+        deallocate(temp)
+
+    end subroutine ExtendMatrix_real
+
+
+    ! Same for integer matrix
+    subroutine ExtendMatrix_int(A, loc, len)
+
+        implicit none
+
+        integer, allocatable :: A(:, :), temp(:, :)
+        integer              :: n, m
+        integer, intent(in)  :: loc, len
+
+        n = size(A, dim = 1)
+        m = size(A, dim = 2)
+        allocate(temp(n, m))
+
+
+        if (loc > n .or. loc < 0) then
+            print *, "Error: cannot extend matrix on given location"
+            return
+        end if
+
+        if (len + loc < 0) then
+            print *, "Error: cannot extend matrix by given length"
+            return
+        end if
+
+
+        temp = A
+
+        deallocate(A)
+        allocate(A((n + len), m))
+
+        A(:loc, :) = temp(:loc, :)
+        A((loc + len + 1):, :) = temp((loc + 1):, :)
+        A((loc + 1):(loc + len), :) = 0
+
+        deallocate(temp)
+
+    end subroutine ExtendMatrix_int
 
 end module types
