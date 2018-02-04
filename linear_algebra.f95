@@ -30,7 +30,7 @@ contains
     
         integer :: n, i, j, k
 
-
+    
         ! Allocation of matrices
         n = size(AA, dim = 1)
         allocate(A(n, n))
@@ -127,29 +127,36 @@ contains
 
 
     ! Function which calculates the upper triangular of matrix  A
-    pure function upper(A)
+    pure function RowEchelon(A)
 
         implicit none
         
         real, intent(in)  :: A(:, :)
-        real, allocatable :: upper(:, :)
+        real, allocatable :: RowEchelon(:, :), temp(:)
         real              :: E
         integer           :: n, m, i, j
 
         n = size(A, dim = 1)
         m = size(A, dim = 2)
-        allocate(upper(n, m))
+        allocate(RowEchelon(n, m))
+        allocate(temp(m))
 
-        upper = A
+        RowEchelon = A
 
         do j = 1, m - 1
             do i = j + 1, n
-                E = upper(i, j)/upper(j, j)
-                upper(i, j:n) = upper(i, j:n) - upper(j, j:n)*E
+                if (RowEchelon(j, j) == 0) then
+                    temp = RowEchelon(j, :)
+                    RowEchelon(j, :) = RowEchelon(j + 1, :)
+                    RowEchelon(j + 1, :) = -temp
+                end if
+
+                E = RowEchelon(i, j)/RowEchelon(j, j)
+                RowEchelon(i,j:n) = RowEchelon(i,j:n) - RowEchelon(j,j:n)*E
             end do
         end do
 
-    end function upper
+    end function RowEchelon
 
 
     ! Function which calculates the determinant of square matrix A
@@ -158,19 +165,19 @@ contains
         implicit none
 
         real, intent(in)  :: A(:, :)
-        real, allocatable :: upA(:, :)
+        real, allocatable :: U(:, :)
         real              :: detA
         integer           :: n, i
 
         n = size(A, dim = 1)
-        allocate(upA(n, n))
+        allocate(U(n, n))
 
-        upA = upper(A)
+        U = RowEchelon(A)
 
         detA = 1
 
         do i = 1, n
-            detA = detA*upA(i, i)
+            detA = detA*U(i, i)
         end do
 
     end function det
