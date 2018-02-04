@@ -1,6 +1,6 @@
 module parameters
 
-    integer, parameter :: xsub = 3, ysub = 1, &
+    integer, parameter :: xsub = 3, ysub = 3, &
                           num_nodes = (xsub + 1)*(ysub + 1), &
                           ! Triangular elements
                           elem_nodes = 3, num_elem = 2*xsub*ysub, &
@@ -15,7 +15,7 @@ module parameters
                           ! H = Ha*x + Hb
                           Ha = -2, Hb = 3.0
 
-    integer            :: i, j, n, ni, nj, n1, n2, n3
+    integer            :: i, j, k, n, ni, nj, n1, n2, n3
     real(8), parameter :: pi = 4*atan(1.0_8)
 
 end module parameters

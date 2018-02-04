@@ -126,7 +126,7 @@ contains
     end function PointInTriangle
 
 
-    ! Function which calculates the upper triangular of matrix  A
+    ! Function which calculates the row echelon of matrix  A
     pure function RowEchelon(A)
 
         implicit none
@@ -134,7 +134,7 @@ contains
         real, intent(in)  :: A(:, :)
         real, allocatable :: RowEchelon(:, :), temp(:)
         real              :: E
-        integer           :: n, m, i, j
+        integer           :: n, m, i, j, k
 
         n = size(A, dim = 1)
         m = size(A, dim = 2)
@@ -145,10 +145,16 @@ contains
 
         do j = 1, m - 1
             do i = j + 1, n
+                ! If diagonal element is 0 swap lines
                 if (RowEchelon(j, j) == 0) then
-                    temp = RowEchelon(j, :)
-                    RowEchelon(j, :) = RowEchelon(j + 1, :)
-                    RowEchelon(j + 1, :) = -temp
+                    do k = j + 1, n
+                        if (RowEchelon(k, j) /= 0) then
+                            temp = RowEchelon(j, :)
+                            RowEchelon(j, :) = RowEchelon(k, :)
+                            RowEchelon(k, :) = -temp
+                            exit
+                        end if
+                    end do
                 end if
 
                 E = RowEchelon(i, j)/RowEchelon(j, j)
