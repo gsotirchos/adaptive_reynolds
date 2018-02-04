@@ -16,5 +16,6 @@ module parameters
                           Ha = -2, Hb = 3.0
 
     integer            :: i, j, n, ni, nj, n1, n2, n3
+    real(8), parameter :: pi = 4*atan(1.0_8)
 
 end module parameters
