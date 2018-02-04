@@ -30,7 +30,7 @@ contains
     
         integer :: n, i, j, k
 
-    
+
         ! Allocation of matrices
         n = size(AA, dim = 1)
         allocate(A(n, n))

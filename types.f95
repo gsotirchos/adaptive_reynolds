@@ -17,6 +17,11 @@ module types
         real, allocatable :: c(:) ! parameter c of element
     end type fem_element
 
+    ! Interface the two types of "extend" subroutines
+    interface extend
+        module procedure ExtendArray, ExtendMatrix
+    end interface
+
 contains
 
     ! subroutine to allocate nodes
@@ -78,5 +83,82 @@ contains
         deallocate(element%c)
 
     end subroutine dealloc_elem
+
+    ! Subroutine to add "len" number of rows after "loc" location
+    ! in a matrix
+    subroutine ExtendMatrix(A, loc, len)
+
+        implicit none
+
+        real, allocatable   :: A(:, :), temp(:, :)
+        integer             :: n, m
+        integer, intent(in) :: loc, len
+
+        n = size(A, dim = 1)
+        m = size(A, dim = 2)
+        allocate(temp(n, m))
+
+
+        if (loc > n .or. loc < 0) then
+            print *, "Error: can't extend matrix on given location"
+            return
+        end if
+
+        if (len + loc < 0) then
+            print *, "Error: can't extend matrix with given length"
+            return
+        end if
+
+
+        temp = A
+
+        deallocate(A)
+        allocate(A((n + len), m))
+
+        A(:loc, :) = temp(:loc, :)
+        A((loc + len + 1):, :) = temp((loc + 1):, :)
+        A((loc + 1):(loc + len), :) = 0
+
+        deallocate(temp)
+
+    end subroutine ExtendMatrix
+
+    ! Subroutine to add "len" number of rows after "loc" location
+    ! in an array
+    subroutine ExtendArray(A, loc, len)
+
+        implicit none
+
+        real, allocatable   :: A(:), temp(:)
+        integer             :: n
+        integer, intent(in) :: loc, len
+
+        n = size(A)
+        allocate(temp(n))
+
+
+        if (loc > n .or. loc < 0) then
+            print *, "Error: can't extend matrix on given location"
+            return
+        end if
+
+        if (len + loc < 0) then
+            print *, "Error: can't extend matrix with given length"
+            return
+        end if
+
+
+        temp = A
+
+        deallocate(A)
+        allocate(A(n + len))
+
+        A(:loc) = temp(:loc)
+        A((loc + len + 1):) = temp((loc + 1):)
+        A((loc + 1):(loc + len)) = 0
+
+        deallocate(temp)
+
+    end subroutine ExtendArray
 
 end module types
