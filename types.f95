@@ -124,9 +124,16 @@ contains
         deallocate(A)
         allocate(A(n + len))
 
-        A(:loc) = temp(:loc)
-        A((loc + len + 1):) = temp((loc + 1):)
-        A((loc + 1):(loc + len)) = 0
+        if (loc > n + len) then
+            A(:(n + len)) = temp(:(n + len))
+        else if (loc == n + len) then
+            A(:loc) = temp(:loc)
+            A((loc + len + 1):) = temp((loc + 1):)
+        else 
+            A(:loc) = temp(:loc)
+            A((loc + len + 1):) = temp((loc + 1):)
+            A((loc + 1):(loc + len)) = 0
+        end if
 
         deallocate(temp)
 
@@ -162,9 +169,16 @@ contains
         deallocate(A)
         allocate(A(n + len))
 
-        A(:loc) = temp(:loc)
-        A((loc + len + 1):) = temp((loc + 1):)
-        A((loc + 1):(loc + len)) = 0
+        if (loc > n + len) then
+            A(:(n + len)) = temp(:(n + len))
+        else if (loc == n + len) then
+            A(:loc) = temp(:loc)
+            A((loc + len + 1):) = temp((loc + 1):)
+        else 
+            A(:loc) = temp(:loc)
+            A((loc + len + 1):) = temp((loc + 1):)
+            A((loc + 1):(loc + len)) = 0
+        end if
 
         deallocate(temp)
 
@@ -202,9 +216,16 @@ contains
         deallocate(A)
         allocate(A((n + len), m))
 
-        A(:loc, :) = temp(:loc, :)
-        A((loc + len + 1):, :) = temp((loc + 1):, :)
-        A((loc + 1):(loc + len), :) = 0
+        if (loc > n + len) then
+            A(:(n + len), :) = temp(:(n + len), :)
+        else if (loc == n + len) then
+            A(:loc, :) = temp(:loc, :)
+            A((loc + len + 1):, :) = temp((loc + 1):, :)
+        else 
+            A(:loc, :) = temp(:loc, :)
+            A((loc + len + 1):, :) = temp((loc + 1):, :)
+            A((loc + 1):(loc + len), :) = 0
+        end if
 
         deallocate(temp)
 
@@ -241,9 +262,16 @@ contains
         deallocate(A)
         allocate(A((n + len), m))
 
-        A(:loc, :) = temp(:loc, :)
-        A((loc + len + 1):, :) = temp((loc + 1):, :)
-        A((loc + 1):(loc + len), :) = 0
+        if (loc > n + len) then
+            A(:(n + len), :) = temp(:(n + len), :)
+        else if (loc == n + len) then
+            A(:loc, :) = temp(:loc, :)
+            A((loc + len + 1):, :) = temp((loc + 1):, :)
+        else 
+            A(:loc, :) = temp(:loc, :)
+            A((loc + len + 1):, :) = temp((loc + 1):, :)
+            A((loc + 1):(loc + len), :) = 0
+        end if
 
         deallocate(temp)
 

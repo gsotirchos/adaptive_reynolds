@@ -110,13 +110,11 @@ subroutine evaluate(node, element, P, splits)
     splits = 0
 
     do n = 1, size(element%node, dim = 1)
-        do i = 1, 7
-            if (      err_norm(n) < mean_err + i*0.5*stdev_err &
-                .and. err_norm(n) > mean_err + (i-1)*0.5*stdev_err) then
-            splits(n) = i
-            exit
-            end if
-        end do
+        if (      err_norm(n) < mean_err + 2*stdev_err &
+            .and. err_norm(n) > mean_err) then
+        splits(n) = 1
+        exit
+        end if
     end do
 
 

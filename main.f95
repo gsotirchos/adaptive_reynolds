@@ -12,7 +12,9 @@ program main
     integer :: tries_left, i
 
     ! Data input
-    call input(node, element)
+    call gen_nodes(node)
+    call gen_elements(node, element)
+    call boundary(node, element)
 
     allocate(P(size(node%x)))
 
@@ -25,7 +27,7 @@ program main
     call evaluate(node, element, P, splits)
     
     ! If there is any split necessary then adapt
-    tries_left = 10
+    tries_left = 30
 
     do while (any(splits > 0))
         tries_left = tries_left - 1
@@ -33,6 +35,8 @@ program main
         ! Adaptation
         print *, "refining...", tries_left, "tries left"
         call adapt(node, element, splits)
+        call gen_elements(node, element)
+        call boundary(node, element)
 
         deallocate(P)
         allocate(P(size(node%x)))

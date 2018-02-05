@@ -1,52 +1,12 @@
-subroutine input(node, element)
+subroutine boundary(node, element)
 
     use types
     use parameters
 
     implicit none
 
-    type(fem_node),    intent(out) :: node
-    type(fem_element), intent(out) :: element
-
-    ! Allocate arrays
-    call alloc_node(node, num_nodes)
-    call alloc_elem(element, num_elem, elem_nodes)
-
-    ! Generate node positions
-    n = 0
-
-    do j = 0, ysub
-        do i = 0, xsub
-            n = n + 1
-
-            node%x(n) = i*dL
-            node%y(n) = j*dB
-        end do
-    end do
-
-
-    ! Generate triangular elements' nodes
-    ! Element pairs are defined as follows
-    !   3     2_____1 
-    !   |\     \    |
-    !   | \     \(2)|
-    !   |  \     \  |    y
-    !   |(1)\     \ |   |
-    !  1|____\2    \|3  |___x
-    n = -1
-
-    do j = 1, ysub
-        do i = 1, xsub
-        n = n + 2
-        element%node(n, 1) = (j - 1)*(xsub + 1) + i
-        element%node(n, 2) = element%node(n, 1) + 1
-        element%node(n, 3) = element%node(n, 2) + xsub
-
-        element%node(n + 1, 1) = element%node(n, 3) + 1
-        element%node(n + 1, 2) = element%node(n, 3)
-        element%node(n + 1, 3) = element%node(n, 2)
-        end do
-    end do
+    type(fem_node)    :: node
+    type(fem_element) :: element
 
 
     ! Generate boundary values
@@ -82,8 +42,8 @@ subroutine input(node, element)
     ! Because dp/dy = 0 -> q = hx*dp/dx
     element%q = 0
     
-    do n = 1, num_elem
-        do n1 = 1, elem_nodes
+    do n = 1, size(element%node, dim = 1)
+        do n1 = 1, 3
             n2 = mod(n1 + 3, 3) + 1
 
     same_y: if (node%y(element%node(n, n1)) == &
@@ -138,7 +98,7 @@ subroutine input(node, element)
     print *,
     print *, "NODES"
     print "(A5, 5A5)", " ", "x", "y", "stat", "P", "H"
-    do i = 0, (num_nodes + 1)
+    do i = 1, size(node%x)
         print "(I4, A1, 2F5.2, I5, 2F5.2)", i, ": ", &
             node%x(i), node%y(i), node%stat(i), node%P(i), node%H(i)
     end do
@@ -147,7 +107,7 @@ subroutine input(node, element)
     print "(A5, 3A4, 5A6)", " ", "n1", "n2", "n3", &
                             "q12", "q23", "q31", &
                             "He", "c"
-    do i = 0, (num_elem + 1)
+    do i = 1, size(element%c)
         print "(I4, A1, 3I4, 5F6.2)", i, ": ", &
             element%node(i, 1), element%node(i, 2), element%node(i, 3), &
             element%q(i, 1), element%q(i, 2), element%q(i, 3), &
@@ -155,4 +115,4 @@ subroutine input(node, element)
     end do
     print *,
 
-end subroutine input
+end subroutine boundary
