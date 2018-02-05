@@ -165,7 +165,7 @@ subroutine gen_elements(node, element)
             D(2, :) = [node%x(n2), node%y(n2), 1.0]
             D(3, :) = [node%x(n3), node%y(n3), 1.0]
 
-            if (det(D) == 0 .or. isnan(det(D))) cycle
+            if (det(D) <= 1.0E-05*dL*dB/2 .or. isnan(det(D))) cycle
 
             j = ubound(element%node, dim = 1) + 1
             call extend(element%node, j - 1, 1)
