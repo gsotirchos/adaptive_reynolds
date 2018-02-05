@@ -130,19 +130,19 @@ subroutine calculate(node, element, P)
     P_free = matmul(inv(KM_free), f_free)
     P = node%P
 
-    do i = 1, size(P_free)
-        P(isfree(i)) = P_free(i)
-    end do
+    P([isfree]) = P_free
 
+    print *, det(KM)
+    print *,
 
     !! DEBUG
     !print *, "** DEBUG **"
     !print *,
     !print *, "STIFFNESS MATRIX"
-    !print "(16F7.1)", KM
+    !print "(14F6.1)", KM
     !print *,
     !print *, "INVERTED (FREE) STIFFNESS MATRIX"
-    !print "(12F7.1)", inv(KM_free)
+    !print "(14F6.1)", inv(KM_free)
     !print *,
     !print *, "f MATRIX"
     !print "(F8.4)", f

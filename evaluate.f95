@@ -110,10 +110,8 @@ subroutine evaluate(node, element, P, splits)
     splits = 0
 
     do n = 1, size(element%node, dim = 1)
-        if (      err_norm(n) < mean_err + 2*stdev_err &
-            .and. err_norm(n) > mean_err) then
+        if (err_norm(n) > mean_err + 2*stdev_err) then
         splits(n) = 1
-        exit
         end if
     end do
 
@@ -149,8 +147,8 @@ subroutine evaluate(node, element, P, splits)
     !print *, "Splits"
     !print "(I1)", splits
     print *, "zeros/total splits:", &
-             real(count(splits == 0))/real(size(splits))
-    print *, "Max split:", maxval(splits)
+             real(count(splits == 0))/size(splits, dim = 1)
+    print *, "total splits:", count(splits /= 0)
     print *,
 
 end subroutine evaluate

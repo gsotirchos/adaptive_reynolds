@@ -287,14 +287,21 @@ contains
         real, intent(in)     :: A(:)
         real                 :: CurMin
         integer, allocatable :: order(:)
-        integer              :: n, i
+        integer              :: n, i, j
 
         allocate(order(size(A)))
 
-        CurMin = minval(A) - 1
+        CurMin = minval(A)
+        j = 0
 
-        do n = 1, size(order)
-            order(n) = minloc(A, dim = 1, mask = (A > CurMin))
+        order = 0
+        do n = 1, size(A, 1)
+            do i = 1, size(A, 1)
+                if (A(i) == CurMin) then
+                    j = j + 1
+                    order(j) = i
+                end if
+            end do
             CurMin = minval(A, mask = (A > CurMin))
         end do
         
@@ -309,14 +316,21 @@ contains
         integer, intent(in)  :: A(:)
         integer              :: CurMin
         integer, allocatable :: order(:)
-        integer              :: n, i
+        integer              :: n, i, j
 
         allocate(order(size(A)))
 
-        CurMin = minval(A) - 1
+        CurMin = minval(A)
+        j = 0
 
-        do n = 1, size(order)
-            order(n) = minloc(A, dim = 1, mask = (A > CurMin))
+        order = 0
+        do n = 1, size(A, 1)
+            do i = 1, size(A, 1)
+                if (A(i) == CurMin) then
+                    j = j + 1
+                    order(j) = i
+                end if
+            end do
             CurMin = minval(A, mask = (A > CurMin))
         end do
         
