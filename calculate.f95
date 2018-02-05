@@ -56,7 +56,6 @@ subroutine calculate(node, element, P)
         ! If the triangles are orthogonal then C is singular
         ! and the area is calculated by width*height/2
         A = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
-        print *, n, ":", A
         !if (A == 0) A = (l12*l31)/2
 
         ! Calculate mass matrix element m
