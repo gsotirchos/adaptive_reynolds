@@ -7,13 +7,13 @@ module parameters
                           ! Only dof is node pressure
                           node_dof = 1, tot_dof = node_dof*num_nodes
 
-    real, parameter    :: L = 1.0, B = 1.0, &
+    real, parameter    :: L = 2, B = 2, &
                           dL = L/xsub, dB = B/ysub, &
                           ! Reynolds equation parameters (axial bearing)
                           hx = 1.0, hy = 2*L/B, lambda = 0.0, &
                           P_bound = 0.0, q = 1.0, &
                           ! H = Ha*x + Hb
-                          Ha = -2, Hb = 3.0
+                          Ha = -1, Hb = (1-Ha)*L/2
 
     integer            :: i, j, k, n, ni, nj, n1, n2, n3
     real(8), parameter :: pi = 4*atan(1.0_8)

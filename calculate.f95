@@ -53,10 +53,7 @@ subroutine calculate(node, element, P)
         C(3, 3) = node%x(element%node(n, 2)) - node%x(element%node(n, 1))
 
         ! Calculate element area
-        ! If the triangles are orthogonal then C is singular
-        ! and the area is calculated by width*height/2
         A = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
-        !if (A == 0) A = (l12*l31)/2
 
         ! Calculate mass matrix element m
         m = lambda*A/12
@@ -125,21 +122,20 @@ subroutine calculate(node, element, P)
         end do
     end do
 
-
     ! Generate P matrix
     P_free = matmul(inv(KM_free), f_free)
     P = node%P
 
     P([isfree]) = P_free
 
-    print *, det(KM)
+    print *, "det(K_free)=", det(KM_free)
     print *,
 
     !! DEBUG
     !print *, "** DEBUG **"
     !print *,
     !print *, "STIFFNESS MATRIX"
-    !print "(14F6.1)", KM
+    !print "(14F6.1)", KM_free
     !print *,
     !print *, "INVERTED (FREE) STIFFNESS MATRIX"
     !print "(14F6.1)", inv(KM_free)

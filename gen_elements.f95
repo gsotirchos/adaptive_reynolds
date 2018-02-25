@@ -148,8 +148,8 @@ subroutine gen_elements(node, element)
 
         ! Calculate angle of every peer
         allocate(angle(size(peer)))
-        angle = mod(atan(node%y(peer) - node%y(n), &
-                         node%x(peer) - node%x(n)) + 2*pi, 2*pi)
+        angle = mod(atan2((node%y(peer) - node%y(n)), &
+                          (node%x(peer) - node%x(n))) + 2*pi, 2*pi)
 
         ! Sort peer nodes clockwise
         peer = peer(order(angle))
