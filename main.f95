@@ -27,7 +27,7 @@ program main
     call evaluate(node, element, P, splits)
     
     ! If there is any split necessary then adapt
-    tries_left = 1
+    tries_left = 5
 
     do while (any(splits > 0))
         tries_left = tries_left - 1

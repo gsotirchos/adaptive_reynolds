@@ -55,6 +55,8 @@ subroutine calculate(node, element, P)
         ! Calculate element area
         A = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
 
+        C = C/(2*A)
+
         ! Calculate mass matrix element m
         m = lambda*A/12
 
@@ -143,9 +145,9 @@ subroutine calculate(node, element, P)
     !print *, "f MATRIX"
     !print "(F8.4)", f
     !print *,
-    !print *, "p matrix"
-    !print "(f10.4)", p
-    !print *,
+    print *, "p matrix"
+    print "(f10.4)", p
+    print *,
     !print *, "Free:", isfree
     !print *, "Fixed:", isfixed
 
