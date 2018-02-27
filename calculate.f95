@@ -130,8 +130,6 @@ subroutine calculate(node, element, P)
 
     P([isfree]) = P_free
 
-    print *, "det(K_free)=", det(KM_free)
-    print *,
 
     !! DEBUG
     !print *, "** DEBUG **"
@@ -139,15 +137,17 @@ subroutine calculate(node, element, P)
     !print *, "STIFFNESS MATRIX"
     !print "(14F6.1)", KM_free
     !print *,
+    !print *, "det(K_free)=", det(KM_free)
+    !print *,
     !print *, "INVERTED (FREE) STIFFNESS MATRIX"
     !print "(14F6.1)", inv(KM_free)
     !print *,
     !print *, "f MATRIX"
     !print "(F8.4)", f
     !print *,
-    print *, "p matrix"
-    print "(f10.4)", p
-    print *,
+    !print *, "p matrix"
+    !print "(f10.4)", p
+    !print *,
     !print *, "Free:", isfree
     !print *, "Fixed:", isfixed
 

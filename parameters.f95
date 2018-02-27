@@ -13,7 +13,7 @@ module parameters
                           hx = 1.0, hy = 2*L/B, lambda = 0.0, &
                           P_bound = 0, q = 1, &
                           ! H = Ha*x + Hb
-                          Ha = -1, Hb = (1-Ha)*L/2
+                          Ha = -2, Hb = 3
 
     integer            :: i, j, k, n, ni, nj, n1, n2, n3
     real(8), parameter :: pi = 4*atan(1.0_8)

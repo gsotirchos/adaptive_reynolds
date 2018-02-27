@@ -73,7 +73,6 @@ subroutine evaluate(node, element, P, splits)
 
         ! Calculate element's area
         A(n) = (C(2, 1)*C(3, 2) - C(2, 2)*C(3, 1))/2
-        !if (A(n) == 0) A(n) = (l12*l31)/2
 
     end do
 
@@ -110,7 +109,7 @@ subroutine evaluate(node, element, P, splits)
     splits = 0
 
     do n = 1, size(element%node, dim = 1)
-        if (err_norm(n) > mean_err + 2*stdev_err) then
+        if (err_norm(n) > mean_err + 1*stdev_err) then
         splits(n) = 1
         end if
     end do
@@ -146,9 +145,8 @@ subroutine evaluate(node, element, P, splits)
     !print *,
     !print *, "Splits"
     !print "(I1)", splits
-    print *, "zeros/total splits:", &
-             real(count(splits == 0))/size(splits, dim = 1)
-    print *, "total splits:", count(splits /= 0)
+    print *, "required splits:", count(splits /= 0)
+    print *, "number of elements:", size(element%He)
     print *,
 
 end subroutine evaluate
