@@ -10,7 +10,7 @@ module parameters
     real, parameter    :: L = 1, B = 1, &
                           dL = L/xsub, dB = B/ysub, &
                           ! Reynolds equation parameters (axial bearing)
-                          hx = 1.0, hy = 2*L/B, lambda = 0.0, &
+                          hx = 1.0, hy = 4*(L**2/B**2), lambda = 0.0, &
                           P_bound = 0, q = 1, &
                           ! H = Ha*x + Hb
                           Ha = -2, Hb = 3
